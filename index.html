@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Number-Cal: Charts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .initial-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 400px;
+            margin: 4rem auto;
+            padding: 2rem;
+            background-color: #f3f4f6;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .table-container { overflow-x: auto; margin: 0 auto; max-width: 100%; }
+        table { border-collapse: collapse; margin: 0 auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); min-width: 400px; }
+        td { border: 2px solid #000; width: 60px; height: 60px; text-align: center; font-size: 20px; cursor: pointer; background-color: #ffffff; position: relative; vertical-align: middle; }
+        input.cell-input { width: 100%; height: 100%; font-size: 20px; text-align: center; border: none; outline: none; background: transparent; }
+        .red { color: red; font-weight: bold; }
+        .small-cn { display: block; font-size: 0.9em; margin-top: 2px; line-height: 1.2; }
+        .hidden { display: none; }
+        @media (max-width: 600px) {
+            td { width: 13vw; height: 13vw; font-size: 20px; }
+            input.cell-input { font-size: 20px; }
+            .small-cn { font-size: 0.85em; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-poppins">
+    <header class="bg-gray-800 text-white p-4 flex justify-between items-center flex-wrap">
+        <h1 class="text-xl md:text-2xl font-bold mb-2 md:mb-0">Number-Cal: Charts</h1>
+        <nav class="flex gap-4">
+            <a href="home.html" class="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded-full transition-colors duration-300">
+                Home
+            </a>
+            <a href="info.html" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full transition-colors duration-300">
+                View Tables
+            </a>
+            <a href="store.html" class="bg-yellow-500 hover:bg-yellow-600 text-gray-800 font-semibold py-2 px-4 rounded-full transition-colors duration-300">
+                View Store
+            </a>
+        </nav>
+    </header>
+
+    <div id="initial-setup" class="initial-form animate-fadeIn">
+        <h2 class="text-2xl font-semibold text-center mb-2">Create a New Chart</h2>
+        <input type="text" id="chart-name-input" placeholder="Enter Chart Name" class="p-2 border border-gray-300 rounded-md shadow-sm">
+        <input type="number" id="rowsInput" placeholder="Rows (e.g., 100)" min="1" value="100" class="p-2 border border-gray-300 rounded-md shadow-sm">
+        <input type="number" id="colsInput" placeholder="Columns (e.g., 7)" min="5" max="8" value="7" class="p-2 border border-gray-300 rounded-md shadow-sm">
+        <button id="create-chart-btn" class="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors duration-300 flex items-center justify-center gap-2">
+            Create Chart
+            <svg id="loading-spinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div id="chart-main" class="container mx-auto p-4 md:p-8 hidden">
+        <h2 class="text-2xl font-semibold mb-4 text-center"></h2>
+        <div class="input-box flex flex-wrap justify-center items-center gap-4 mb-8">
+            <button id="save-btn" class="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors duration-300 flex items-center justify-center gap-2">
+                Save Chart
+                <svg id="save-symbol" class="h-5 w-5 hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <button onclick="clearGrid()" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 transition-colors duration-300">Clear Grid</button>
+            <button onclick="newChart()" class="bg-purple-500 text-white p-2 rounded hover:bg-purple-600 transition-colors duration-300">Create New Chart</button>
+        </div>
+        <div class="table-container">
+            <table id="grid">
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const redPairs = {0:5, 1:6, 2:7, 3:8, 4:9, 5:0, 6:1, 7:2, 8:3, 9:4};
+        let ROWS = 100;
+        let COLS = 7;
+        const tbody = document.querySelector("#grid tbody");
+        const chartNameHeader = document.querySelector("#chart-main h2");
+        const createBtn = document.getElementById('create-chart-btn');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const saveBtn = document.getElementById('save-btn');
+        const saveSymbol = document.getElementById('save-symbol');
+        let gridData = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+        let currentChartName = null;
+
+        function calculateCN(num) {
+            const a = parseInt(num[0]), b = parseInt(num[1]);
+            const sum1 = a + b;
+            const sum2 = a + a;
+            return (sum1 + sum2) % 10;
+        }
+        function isRed(num) {
+            const a = parseInt(num[0]), b = parseInt(num[1]);
+            return a === b || redPairs[a] === b;
+        }
+
+        function renderGrid(newRows, newCols) {
+            ROWS = newRows;
+            COLS = newCols;
+            tbody.innerHTML = "";
+            for (let r = 0; r < ROWS; r++) {
+                const tr = document.createElement("tr");
+                for (let c = 0; c < COLS; c++) {
+                    const td = document.createElement("td");
+                    td.addEventListener("click", () => {
+                        td.innerHTML = "";
+                        const input = document.createElement("input");
+                        input.type = "text";
+                        input.maxLength = 2;
+                        input.className = "cell-input";
+                        input.value = gridData[r][c]?.val || "";
+                        td.appendChild(input);
+                        input.focus();
+                        input.addEventListener("input", () => {
+                            const val = input.value.trim();
+                            if (val === "**" || /^\d{2}$/.test(val)) {
+                                input.blur();
+                                if (val === "**") {
+                                    gridData[r][c] = { val, cn: null };
+                                    td.innerHTML = `<span class="red">${val}</span>`;
+                                } else {
+                                    const cn = calculateCN(val);
+                                    const red = isRed(val);
+                                    gridData[r][c] = { val, cn };
+                                    td.innerHTML = `<span class="${red ? 'red' : ''}">${val}<span class="small-cn">(${cn})</span></span>`;
+                                }
+                                saveChart();
+                                let nextRow = r, nextCol = c + 1;
+                                if (nextCol >= COLS) { nextCol = 0; nextRow = r + 1; }
+                                if (nextRow < ROWS) {
+                                    const nextCell = tbody.rows[nextRow]?.cells[nextCol];
+                                    if (nextCell) nextCell.click();
+                                }
+                            }
+                        });
+                        input.addEventListener("blur", () => {
+                            const val = input.value.trim();
+                            if (val === "**") {
+                                gridData[r][c] = { val, cn: null };
+                                td.innerHTML = `<span class="red">${val}</span>`;
+                            } else if (/^\d{2}$/.test(val)) {
+                                const cn = calculateCN(val);
+                                const red = isRed(val);
+                                gridData[r][c] = { val, cn };
+                                td.innerHTML = `<span class="${red ? 'red' : ''}">${val}<span class="small-cn">(${cn})</span></span>`;
+                            } else {
+                                td.innerHTML = "";
+                                gridData[r][c] = null;
+                            }
+                            saveChart();
+                        });
+                    });
+                    if (gridData[r][c]) {
+                        const { val, cn } = gridData[r][c];
+                        if (val === "**") {
+                            td.innerHTML = `<span class="red">${val}</span>`;
+                        } else {
+                            const red = isRed(val);
+                            td.innerHTML = `<span class="${red ? 'red' : ''}">${val}<span class="small-cn">(${cn})</span></span>`;
+                        }
+                    }
+                    tr.appendChild(td);
+                }
+                tbody.appendChild(tr);
+            }
+        }
+
+        function saveChart() {
+            if (!currentChartName) {
+                currentChartName = document.getElementById('chart-name-input').value || `Chart-${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
+            }
+            const history = JSON.parse(localStorage.getItem('chartHistory')) || {};
+            history[currentChartName] = {
+                rows: ROWS,
+                cols: COLS,
+                data: JSON.parse(JSON.stringify(gridData))
+            };
+            localStorage.setItem('chartHistory', JSON.stringify(history));
+        }
+
+        function loadChart(label) {
+            const history = JSON.parse(localStorage.getItem('chartHistory')) || {};
+            const savedChart = history[label];
+            if (!savedChart) return;
+            currentChartName = label;
+            ROWS = savedChart.rows;
+            COLS = savedChart.cols;
+            gridData = savedChart.data;
+            chartNameHeader.textContent = `Editing: ${currentChartName}`;
+            document.getElementById('initial-setup').classList.add('hidden');
+            document.getElementById('chart-main').classList.remove('hidden');
+            renderGrid(ROWS, COLS);
+        }
+        
+        function clearGrid() {
+            gridData = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+            renderGrid(ROWS, COLS);
+            saveChart();
+        }
+
+        function newChart() {
+            document.getElementById('initial-setup').classList.remove('hidden');
+            document.getElementById('chart-main').classList.add('hidden');
+            document.getElementById('chart-name-input').value = '';
+            currentChartName = null;
+        }
+
+        createBtn.addEventListener('click', () => {
+            const name = document.getElementById('chart-name-input').value.trim();
+            const newRows = parseInt(document.getElementById('rowsInput').value);
+            const newCols = parseInt(document.getElementById('colsInput').value);
+            if (!name) {
+                alert('Please enter a chart name.');
+                return;
+            }
+            createBtn.disabled = true;
+            loadingSpinner.classList.remove('hidden');
+            setTimeout(() => {
+                currentChartName = name;
+                gridData = Array.from({ length: newRows }, () => Array(newCols).fill(null));
+                chartNameHeader.textContent = `Editing: ${currentChartName}`;
+                document.getElementById('initial-setup').classList.add('hidden');
+                document.getElementById('chart-main').classList.remove('hidden');
+                renderGrid(newRows, newCols);
+                saveChart();
+                createBtn.disabled = false;
+                loadingSpinner.classList.add('hidden');
+            }, 500);
+        });
+
+        saveBtn.addEventListener('click', () => {
+            saveBtn.disabled = true;
+            saveSymbol.classList.remove('hidden');
+            saveBtn.classList.add('animate-pulse');
+            saveBtn.textContent = 'Saved!';
+            saveChart();
+            setTimeout(() => {
+                saveBtn.disabled = false;
+                saveSymbol.classList.add('hidden');
+                saveBtn.classList.remove('animate-pulse');
+                saveBtn.textContent = 'Save Chart';
+            }, 1000);
+        });
+
+        const chartToLoad = localStorage.getItem('chartToLoad');
+        if (chartToLoad) {
+            loadChart(chartToLoad);
+            localStorage.removeItem('chartToLoad');
+        }
+    </script>
+</body>
+</html>
+
