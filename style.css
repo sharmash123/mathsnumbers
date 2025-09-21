@@ -203,3 +203,38 @@ input[type="range"]::-webkit-slider-thumb {
 .hover\:bg-green-600:hover { background-color: #059669; }
 .bg-red-500 { background-color: #ef4444; }
 .hover\:bg-red-600:hover { background-color: #dc2626; }
+/* Add this new rule to your CSS file */
+.grid-container-wrapper {
+    overflow-x: auto;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Ensure your grid container and cells are styled correctly */
+.grid-table {
+    display: grid;
+    /* This will be handled by JavaScript */
+    /* grid-template-columns: repeat(7, 1fr); */ 
+    border-collapse: collapse;
+    max-width: fit-content;
+}
+
+.grid-cell {
+    width: 50px; /* Adjust as needed */
+    height: 50px; /* Adjust as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    /* Optional: You can make the cells slightly smaller on mobile to fit more */
+    .grid-cell {
+        width: 45px;
+        height: 45px;
+    }
+}
+
