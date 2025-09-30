@@ -105,7 +105,7 @@
             const openTable = document.getElementById('open-table');
             const closeTable = document.getElementById('close-table');
 
-            const history = JSON.parse(localStorage.getItem('chartHistory')) || {};
+            let history = JSON.parse(localStorage.getItem('chartHistory')) || {};
             Object.keys(history).forEach(chartName => {
                 const option1 = document.createElement('option');
                 option1.value = chartName;
@@ -125,42 +125,70 @@
 
                 const chart1 = history[chart1Name];
                 const chart2 = history[chart2Name];
+                if (!chart1 || !chart2 || !chart1.data || !chart2.data) {
+                    alert('Invalid chart data. Please ensure charts are properly saved.');
+                    return;
+                }
+
                 const rows = Math.max(chart1.rows, chart2.rows);
                 const cols = Math.max(chart1.cols, chart2.cols);
 
                 // Generate Open Conditions Table
                 openTable.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
                 openTable.innerHTML = '';
+                let openData = [];
                 for (let i = 0; i < rows; i++) {
+                    let row = [];
                     for (let j = 0; j < cols; j++) {
-                        const cell = document.createElement('div');
-                        cell.className = 'grid-cell';
                         const cn1 = chart1.data[i]?.[j]?.cn || '';
                         const cn2 = chart2.data[i]?.[j]?.cn || '';
                         const open1 = cn1.split('-')[0] || '';
                         const open2 = cn2.split('-')[0] || '';
-                        cell.textContent = open1 + open2;
+                        const cellValue = open1 + open2;
+                        row.push(cellValue);
+                        const cell = document.createElement('div');
+                        cell.className = 'grid-cell';
+                        cell.textContent = cellValue;
                         openTable.appendChild(cell);
                     }
+                    openData.push(row);
                 }
                 openConditionsDiv.classList.remove('hidden');
 
                 // Generate Close Conditions Table
                 closeTable.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
                 closeTable.innerHTML = '';
+                let closeData = [];
                 for (let i = 0; i < rows; i++) {
+                    let row = [];
                     for (let j = 0; j < cols; j++) {
-                        const cell = document.createElement('div');
-                        cell.className = 'grid-cell';
                         const cn1 = chart1.data[i]?.[j]?.cn || '';
                         const cn2 = chart2.data[i]?.[j]?.cn || '';
                         const close1 = cn1.split('-')[1] || '';
                         const close2 = cn2.split('-')[1] || '';
-                        cell.textContent = close1 + close2;
+                        const cellValue = close1 + close2;
+                        row.push(cellValue);
+                        const cell = document.createElement('div');
+                        cell.className = 'grid-cell';
+                        cell.textContent = cellValue;
                         closeTable.appendChild(cell);
                     }
+                    closeData.push(row);
                 }
                 closeConditionsDiv.classList.remove('hidden');
+
+                // Ask for new chart name and store
+                const newChartName = prompt('Enter a name for the linked chart:');
+                if (newChartName) {
+                    const linkedChart = {
+                        rows: rows,
+                        cols: cols,
+                        data: openData.map((row, i) => row.map((val, j) => ({ num: val, cn: `${openData[i][j]}-${closeData[i][j]}` })))
+                    };
+                    history[newChartName] = linkedChart;
+                    localStorage.setItem('chartHistory', JSON.stringify(history));
+                    alert(`Chart saved as "${newChartName}".`);
+                }
             });
         });
     </script>
