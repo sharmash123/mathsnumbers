@@ -93,6 +93,7 @@
             <h3 class="text-xl font-semibold mb-2 text-gray-800">Close Conditions Table</h3>
             <div id="close-table" class="grid-table"></div>
         </div>
+        <div id="debug-output" class="mt-4 text-sm text-red-600"></div>
     </div>
 
     <script>
@@ -104,8 +105,13 @@
             const closeConditionsDiv = document.getElementById('close-conditions');
             const openTable = document.getElementById('open-table');
             const closeTable = document.getElementById('close-table');
+            const debugOutput = document.getElementById('debug-output');
 
             let history = JSON.parse(localStorage.getItem('chartHistory')) || {};
+            if (Object.keys(history).length === 0) {
+                debugOutput.textContent = 'Warning: No charts found in localStorage. Please save charts first.';
+            }
+
             Object.keys(history).forEach(chartName => {
                 const option1 = document.createElement('option');
                 option1.value = chartName;
@@ -115,18 +121,20 @@
             });
 
             linkChartsBtn.addEventListener('click', () => {
+                debugOutput.textContent = ''; // Clear previous debug messages
                 const chart1Name = chart1Select.value;
                 const chart2Name = chart2Select.value;
 
                 if (!chart1Name || !chart2Name || chart1Name === chart2Name) {
-                    alert('Please select two different charts.');
+                    debugOutput.textContent = 'Error: Please select two different charts.';
                     return;
                 }
 
                 const chart1 = history[chart1Name];
                 const chart2 = history[chart2Name];
                 if (!chart1 || !chart2 || !chart1.data || !chart2.data) {
-                    alert('Invalid chart data. Please ensure charts are properly saved.');
+                    debugOutput.textContent = 'Error: Invalid chart data. Ensure charts are properly saved.';
+                    console.error('Chart data:', chart1, chart2);
                     return;
                 }
 
@@ -148,7 +156,7 @@
                         row.push(cellValue);
                         const cell = document.createElement('div');
                         cell.className = 'grid-cell';
-                        cell.textContent = cellValue;
+                        cell.textContent = cellValue || '';
                         openTable.appendChild(cell);
                     }
                     openData.push(row);
@@ -170,7 +178,7 @@
                         row.push(cellValue);
                         const cell = document.createElement('div');
                         cell.className = 'grid-cell';
-                        cell.textContent = cellValue;
+                        cell.textContent = cellValue || '';
                         closeTable.appendChild(cell);
                     }
                     closeData.push(row);
@@ -187,9 +195,15 @@
                     };
                     history[newChartName] = linkedChart;
                     localStorage.setItem('chartHistory', JSON.stringify(history));
+                    debugOutput.textContent = `Chart saved as "${newChartName}".`;
                     alert(`Chart saved as "${newChartName}".`);
+                } else {
+                    debugOutput.textContent = 'Chart not saved. Please enter a name.';
                 }
             });
+
+            // Log initial state for debugging
+            console.log('Initial history:', history);
         });
     </script>
 </body>
