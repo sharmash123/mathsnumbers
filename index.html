@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
- 
     <title>Number-Cal: Charts</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -55,8 +54,18 @@
             color: red; 
             font-weight: bold; 
         }
+        .number-value {
+            font-size: 34px; /* Slightly larger font for the number */
+            font-weight: bold;
+        }
+        .conditions {
+            display: block;
+            font-size: 0.8em;
+            margin-top: 2px;
+            line-height: 1.2;
+        }
         .small-cn { 
-            display: block; 
+            display: inline; /* Changed to inline for (open)-(close) format */
             font-size: 0.8em; 
             margin-top: 2px; 
             line-height: 1.2; 
@@ -68,11 +77,18 @@
             td { 
                 width: 13vw; 
                 height: 13vw; 
-                font-size: 30px; 
+                font-size: 24px; /* Adjusted for mobile */
             }
             input.cell-input { 
-                font-size: 30px;
+                font-size: 24px;
                 font-weight: bold;
+            }
+            .number-value {
+                font-size: 28px; /* Slightly smaller but still larger for mobile */
+                font-weight: bold;
+            }
+            .conditions { 
+                font-size: 0.75em; 
             }
             .small-cn { 
                 font-size: 0.75em; 
@@ -148,6 +164,12 @@
             const sum2 = a + a;
             return (sum1 + sum2) % 10;
         }
+
+        function calculateCloseCond(num) {
+            const a = parseInt(num[0]), b = parseInt(num[1]);
+            return ((a + b) % 10 + (b + b) % 10) % 10;
+        }
+
         function isRed(num) {
             const a = parseInt(num[0]), b = parseInt(num[1]);
             return a === b || redPairs[a] === b;
@@ -175,13 +197,14 @@
                             if (val === "**" || /^\d{2}$/.test(val)) {
                                 input.blur();
                                 if (val === "**") {
-                                    gridData[r][c] = { val, cn: null };
-                                    td.innerHTML = `<span class="red">${val}</span>`;
+                                    gridData[r][c] = { val, cn: null, close: null };
+                                    td.innerHTML = `<span class="red number-value">${val}</span>`;
                                 } else {
                                     const cn = calculateCN(val);
+                                    const close = calculateCloseCond(val);
                                     const red = isRed(val);
-                                    gridData[r][c] = { val, cn };
-                                    td.innerHTML = `<span class="${red ? 'red' : ''}">${val}<span class="small-cn">(${cn})</span></span>`;
+                                    gridData[r][c] = { val, cn, close };
+                                    td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">(${cn})-(${close})</span>`;
                                 }
                                 saveChart();
                                 let nextRow = r, nextCol = c + 1;
@@ -195,13 +218,14 @@
                         input.addEventListener("blur", () => {
                             const val = input.value.trim();
                             if (val === "**") {
-                                gridData[r][c] = { val, cn: null };
-                                td.innerHTML = `<span class="red">${val}</span>`;
+                                gridData[r][c] = { val, cn: null, close: null };
+                                td.innerHTML = `<span class="red number-value">${val}</span>`;
                             } else if (/^\d{2}$/.test(val)) {
                                 const cn = calculateCN(val);
+                                const close = calculateCloseCond(val);
                                 const red = isRed(val);
-                                gridData[r][c] = { val, cn };
-                                td.innerHTML = `<span class="${red ? 'red' : ''}">${val}<span class="small-cn">(${cn})</span></span>`;
+                                gridData[r][c] = { val, cn, close };
+                                td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">(${cn})-(${close})</span>`;
                             } else {
                                 td.innerHTML = "";
                                 gridData[r][c] = null;
@@ -210,12 +234,12 @@
                         });
                     });
                     if (gridData[r][c]) {
-                        const { val, cn } = gridData[r][c];
+                        const { val, cn, close } = gridData[r][c];
                         if (val === "**") {
-                            td.innerHTML = `<span class="red">${val}</span>`;
+                            td.innerHTML = `<span class="red number-value">${val}</span>`;
                         } else {
                             const red = isRed(val);
-                            td.innerHTML = `<span class="${red ? 'red' : ''}">${val}<span class="small-cn">(${cn})</span></span>`;
+                            td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">(${cn})-(${close})</span>`;
                         }
                     }
                     tr.appendChild(td);
@@ -309,6 +333,7 @@
     </script>
 </body>
 </html>
+
 
 
 
