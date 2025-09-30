@@ -156,7 +156,7 @@
             <button onclick="newChart()" class="bg-purple-500 text-white p-2 rounded hover:bg-purple-600 transition-colors duration-300">Create New Chart</button>
         </div>
         <div class="quick-entry flex flex-wrap justify-center items-center gap-4 mb-4">
-            <input type="text" id="quick-input" placeholder="Enter values like 2354**00" class="p-2 border border-gray-300 rounded-md shadow-sm flex-grow max-w-md">
+            <input type="text" id="quick-input" placeholder="Enter values like 08 85 06 88 **" class="p-2 border border-gray-300 rounded-md shadow-sm flex-grow max-w-md">
             <button id="fill-grid-btn" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors duration-300">Fill Grid</button>
         </div>
         <div class="modify-size flex flex-wrap justify-center items-center gap-4 mb-4">
@@ -173,7 +173,7 @@
 
     <script>
         const redPairs = {0:5, 1:6, 2:7, 3:8, 4:9, 5:0, 6:1, 7:2, 8:3, 9:4};
-        let ROWS = 1000;
+        let ROWS = 100;
         let COLS = 7;
         const tbody = document.querySelector("#grid tbody");
         const chartNameHeader = document.querySelector("#chart-main h2");
@@ -232,8 +232,13 @@
                                     const cn = calculateCN(val);
                                     const close = calculateCloseCond(val);
                                     const red = isRed(val);
-                                    gridData[r][c] = { val, cn };
-                                    td.innerHTML = `<span class="${red ? 'red' : ''}">${val}<span class="small-cn">(${cn})</span></span>`;
+                                    if (cn !== null && close !== null) {
+                                        gridData[r][c] = { val, cn, close };
+                                        td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">${cn}-${close}</span>`;
+                                    } else {
+                                        console.log(`Invalid calculation for ${val}: cn=${cn}, close=${close}`);
+                                        td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span>`;
+                                    }
                                 }
                                 saveChart();
                                 let nextRow = r, nextCol = c + 1;
@@ -291,35 +296,28 @@
             const quickInput = document.getElementById('quick-input').value.trim();
             if (!quickInput) return;
 
-            const chunks = [];
-            for (let i = 0; i < quickInput.length; i += 2) {
-                let chunk = quickInput.slice(i, i + 2);
-                if (chunk.length === 2) {
-                    chunks.push(chunk);
-                } else if (chunk === '*' && i + 1 < quickInput.length && quickInput[i + 1] === '*') {
-                    chunks.push('**');
-                    i++; // Skip the second * to avoid double counting
-                }
-            }
-
+            // Split by spaces and process each chunk
+            const chunks = quickInput.split(/\s+/).map(chunk => chunk.trim());
             let row = 0;
             let col = 0;
+
             chunks.forEach(chunk => {
-                if (row < ROWS && col < COLS) {
-                    if (chunk === '**') {
-                        gridData[row][col] = { val: '**', cn: null, close: null };
-                    } else if (/^\d{2}$/.test(chunk)) {
-                        const cn = calculateCN(chunk);
-                        const close = calculateCloseCond(chunk);
-                        gridData[row][col] = { val: chunk, cn, close };
-                    } else {
-                        console.log(`Invalid chunk: ${chunk}`);
-                    }
-                    col++;
-                    if (col >= COLS) {
-                        col = 0;
-                        row++;
-                    }
+                if (row >= ROWS || col >= COLS) return; // Stop if out of bounds
+
+                if (chunk === '*' || chunk === '**') {
+                    gridData[row][col] = { val: '**', cn: null, close: null };
+                } else if (/^\d{2}$/.test(chunk)) {
+                    const cn = calculateCN(chunk);
+                    const close = calculateCloseCond(chunk);
+                    gridData[row][col] = { val: chunk, cn, close };
+                } else {
+                    console.log(`Invalid chunk: ${chunk}`);
+                }
+
+                col++;
+                if (col >= COLS) {
+                    col = 0;
+                    row++;
                 }
             });
 
