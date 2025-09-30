@@ -6,7 +6,125 @@
     <title>Number-Cal: Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #6b7280, #1e40af, #9333ea);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .store-body {
+            padding-top: 60px; /* Ensure content clears the fixed header */
+        }
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(31, 41, 55, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            animation: slideDown 0.6s ease-out;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chart-item {
+            background: linear-gradient(145deg, #ffffff, #f3f4f6);
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.4s ease;
+            transform: translateZ(0);
+        }
+        .chart-item:hover {
+            transform: scale(1.02) translateZ(0);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(145deg, #f3f4f6, #ffffff);
+        }
+        .chart-label {
+            color: #1e40af;
+            font-size: 1.5rem;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .chart-item:hover .chart-label {
+            color: #3b82f6;
+        }
+        .edit-icon {
+            transition: transform 0.3s ease;
+        }
+        .chart-item:hover .edit-icon {
+            transform: rotate(15deg);
+        }
+        button {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        #delete-all-btn {
+            background-color: #ef4444;
+            color: #ffffff;
+        }
+        #delete-all-btn:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+        }
+        .bg-red-500 {
+            background-color: #ef4444;
+        }
+        .bg-red-500:hover {
+            background-color: #dc2626;
+        }
+        .text-blue-600:hover {
+            color: #3b82f6;
+        }
+        .no-charts {
+            text-align: center;
+            color: #9ca3af;
+            font-style: italic;
+            font-size: 1.2rem;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+            .chart-item {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .chart-label {
+                font-size: 1.2rem;
+            }
+            button {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
 </head>
 <body class="bg-gray-100 font-poppins store-body">
     <header class="bg-gray-800 text-white p-4 flex justify-between items-center flex-wrap">
@@ -44,7 +162,7 @@
             const chartLabels = Object.keys(history).sort();
 
             if (chartLabels.length === 0) {
-                chartList.innerHTML = `<p class="text-center text-gray-500">No charts saved yet. Go to the Charts page to create one!</p>`;
+                chartList.innerHTML = `<p class="no-charts">No charts saved yet. Go to the Charts page to create one!</p>`;
                 deleteAllBtn.classList.add('hidden');
                 return;
             }
@@ -52,7 +170,8 @@
             deleteAllBtn.classList.remove('hidden');
             chartLabels.forEach(label => {
                 const chartItem = document.createElement('div');
-                chartItem.className = 'bg-white p-4 rounded-lg shadow-lg flex justify-between items-center transition-all duration-300 ease-in-out chart-item animate-fadeIn';
+                chartItem.className = 'chart-item animate-fadeIn';
+                chartItem.style.animationDelay = `${chartLabels.indexOf(label) * 0.1}s`;
                 
                 const editButton = document.createElement('button');
                 editButton.className = 'font-semibold text-lg flex items-center gap-2 cursor-pointer text-blue-600 hover:text-blue-800 transition-colors duration-300';
