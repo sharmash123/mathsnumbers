@@ -226,7 +226,7 @@
                                     const red = isRed(val);
                                     if (cn !== null && close !== null) {
                                         gridData[r][c] = { val, cn, close };
-                                        td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">(${cn})-(${close})</span>`;
+                                        td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">${cn}-${close}</span>`;
                                     } else {
                                         console.log(`Invalid calculation for ${val}: cn=${cn}, close=${close}`);
                                         td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span>`;
@@ -252,7 +252,7 @@
                                 const red = isRed(val);
                                 if (cn !== null && close !== null) {
                                     gridData[r][c] = { val, cn, close };
-                                    td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">(${cn})-(${close})</span>`;
+                                    td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">${cn}-${close}</span>`;
                                 } else {
                                     console.log(`Invalid calculation for ${val}: cn=${cn}, close=${close}`);
                                     td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span>`;
@@ -271,7 +271,7 @@
                         } else {
                             const red = isRed(val);
                             if (cn !== null && close !== null) {
-                                td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">(${cn})-(${close})</span>`;
+                                td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">${cn}-${close}</span>`;
                             } else {
                                 console.log(`Missing cn or close for ${val}: cn=${cn}, close=${close}`);
                                 td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span>`;
