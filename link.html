@@ -7,274 +7,162 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        .initial-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            max-width: 500px;
+        body {
+            background: linear-gradient(135deg, #6b7280, #1e40af, #9333ea);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 1200px;
             margin: 4rem auto;
             padding: 2rem;
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.8s ease-out;
         }
-        .initial-form:hover {
-            transform: translateY(-5px);
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .link-container {
-            overflow-x: auto;
-            margin: 2rem auto;
-            max-width: 90%;
+        .grid-table {
+            display: grid;
+            gap: 2px;
+            border: 3px solid #000;
+            background: #fff;
         }
-        .link-table {
-            border-collapse: collapse;
-            margin: 1rem auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            min-width: 600px;
-        }
-        .link-td {
-            border: 1px solid #e5e7eb;
-            width: 100px;
-            height: 100px;
+        .grid-cell {
+            border: 3px solid #000;
+            padding: 0.5rem;
             text-align: center;
-            font-size: 24px;
-            font-weight: 500;
-            background-color: #f9fafb;
-            vertical-align: middle;
-            padding: 8px;
-            transition: background-color 0.3s ease;
-        }
-        .link-td:hover {
-            background-color: #e5e7eb;
-        }
-        .checkbox-container {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-            height: 100%;
-        }
-        .checkbox-container input[type="checkbox"] {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-            height: 100%;
-            width: 100%;
-        }
-        .checkmark {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 100%;
-            background-color: #ffffff;
-            border: 2px solid #d1d5db;
-            border-radius: 6px;
+            min-width: 60px;
+            min-height: 60px;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            background: #f9fafb;
         }
-        .checkbox-container:hover .checkmark {
-            border-color: #9ca3af;
+        select, button {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
         }
-        .checkbox-container input[type="checkbox"]:checked ~ .checkmark {
-            background-color: #4b5563;
-            border-color: #4b5563;
-            color: #ffffff;
+        button {
+            background: #10b981;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
         }
-        .checkmark:after {
-            content: "✓";
-            font-size: 24px;
-            color: #ffffff;
-            display: none;
-        }
-        .checkbox-container input[type="checkbox"]:checked ~ .checkmark:after {
-            display: block;
-        }
-        .hidden {
-            display: none;
-        }
-        @media (max-width: 1024px) {
-            .link-td {
-                width: 80px;
-                height: 80px;
-                font-size: 20px;
-            }
+        button:hover {
+            background: #059669;
         }
         @media (max-width: 600px) {
-            .link-td {
-                width: 60px;
-                height: 60px;
-                font-size: 16px;
-            }
-            .initial-form {
+            .container {
                 margin: 2rem auto;
-                padding: 1.5rem;
+                padding: 1rem;
             }
-            .link-container {
-                margin: 1rem auto;
+            .grid-cell {
+                min-width: 40px;
+                min-height: 40px;
+                font-size: 1rem;
             }
         }
     </style>
 </head>
-<body class="bg-gray-100 font-poppins">
-    <header class="bg-gray-800 text-white p-4 flex justify-between items-center flex-wrap">
-        <h1 class="text-xl md:text-2xl font-bold mb-2 md:mb-0">Number-Cal: Link Charts</h1>
-        <nav class="flex gap-4">
-            <a href="index.html" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-full transition-colors duration-300">
-                Charts
-            </a>
-            <a href="store.html" class="bg-yellow-500 hover:bg-yellow-600 text-gray-800 font-semibold py-2 px-4 rounded-full transition-colors duration-300">
-                Store
-            </a>
-            <a href="info.html" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full transition-colors duration-300">
-                Tables
-            </a>
-        </nav>
-    </header>
-
-    <div id="initial-setup" class="initial-form animate-fadeIn">
-        <h2 class="text-2xl font-semibold text-center mb-2">Create Chart Link</h2>
-        <input type="text" id="link-name-input" placeholder="Enter Link Name" class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500">
-        <select id="chart1-select" class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500">
-            <option value="">Select First Chart</option>
-        </select>
-        <select id="chart2-select" class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500">
-            <option value="">Select Second Chart</option>
-        </select>
-        <button id="create-link-btn" class="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors duration-300 flex items-center justify-center gap-2">
-            Create Link
-            <svg id="loading-spinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-        </button>
-    </div>
-
-    <div id="link-main" class="container mx-auto p-4 md:p-8 hidden">
-        <h2 class="text-2xl font-semibold mb-4 text-center"></h2>
-        <div class="input-box flex flex-wrap justify-center items-center gap-4 mb-8">
-            <button id="save-link-btn" class="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors duration-300 flex items-center justify-center gap-2">
-                Save Link
-                <svg id="save-symbol" class="h-5 w-5 hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                </svg>
-            </button>
+<body>
+    <div class="container">
+        <h2 class="text-2xl font-semibold text-center mb-6 text-indigo-900">Link Charts</h2>
+        <div class="mb-4 flex flex-col md:flex-row gap-4">
+            <select id="chart1-select" class="w-full md:w-1/2">
+                <option value="">Select First Chart</option>
+            </select>
+            <select id="chart2-select" class="w-full md:w-1/2">
+                <option value="">Select Second Chart</option>
+            </select>
+            <button id="link-charts-btn" class="w-full md:w-auto">Link Charts</button>
         </div>
-        <div class="link-container">
-            <h3 class="text-xl font-semibold text-center mb-2">Open Conditions</h3>
-            <table class="link-table">
-                <tbody id="open-table"></tbody>
-            </table>
-            <h3 class="text-xl font-semibold text-center mb-2 mt-4">Close Conditions</h3>
-            <table class="link-table">
-                <tbody id="close-table"></tbody>
-            </table>
+
+        <div id="open-conditions" class="mb-6 hidden">
+            <h3 class="text-xl font-semibold mb-2 text-gray-800">Open Conditions Table</h3>
+            <div id="open-table" class="grid-table"></div>
+        </div>
+        <div id="close-conditions" class="hidden">
+            <h3 class="text-xl font-semibold mb-2 text-gray-800">Close Conditions Table</h3>
+            <div id="close-table" class="grid-table"></div>
         </div>
     </div>
 
     <script>
-        let currentLinkName = null;
-        const chartNameHeader = document.querySelector("#link-main h2");
-        const createLinkBtn = document.getElementById('create-link-btn');
-        const loadingSpinner = document.getElementById('loading-spinner');
-        const saveLinkBtn = document.getElementById('save-link-btn');
-        const saveSymbol = document.getElementById('save-symbol');
-        const chart1Select = document.getElementById('chart1-select');
-        const chart2Select = document.getElementById('chart2-select');
-        const openTable = document.getElementById('open-table');
-        const closeTable = document.getElementById('close-table');
+        document.addEventListener('DOMContentLoaded', () => {
+            const chart1Select = document.getElementById('chart1-select');
+            const chart2Select = document.getElementById('chart2-select');
+            const linkChartsBtn = document.getElementById('link-charts-btn');
+            const openConditionsDiv = document.getElementById('open-conditions');
+            const closeConditionsDiv = document.getElementById('close-conditions');
+            const openTable = document.getElementById('open-table');
+            const closeTable = document.getElementById('close-table');
 
-        function populateChartSelects() {
             const history = JSON.parse(localStorage.getItem('chartHistory')) || {};
-            chart1Select.innerHTML = '<option value="">Select First Chart</option>';
-            chart2Select.innerHTML = '<option value="">Select Second Chart</option>';
             Object.keys(history).forEach(chartName => {
                 const option1 = document.createElement('option');
-                const option2 = document.createElement('option');
                 option1.value = chartName;
-                option2.value = chartName;
                 option1.textContent = chartName;
-                option2.textContent = chartName;
-                chart1Select.appendChild(option1);
-                chart2Select.appendChild(option2);
+                chart1Select.appendChild(option1.cloneNode(true));
+                chart2Select.appendChild(option1.cloneNode(true));
             });
-        }
 
-        function renderLinkedTables(chart1Data, chart2Data) {
-            const minRows = Math.min(chart1Data.rows, chart2Data.rows);
-            openTable.innerHTML = '';
-            closeTable.innerHTML = '';
-            for (let r = 0; r < minRows; r++) {
-                const trOpen = document.createElement('tr');
-                const trClose = document.createElement('tr');
-                for (let c = 0; c < Math.min(chart1Data.cols, chart2Data.cols); c++) {
-                    const tdOpen = document.createElement('td');
-                    const tdClose = document.createElement('td');
-                    tdOpen.className = 'link-td';
-                    tdClose.className = 'link-td';
-                    const val1 = chart1Data.data[r][c]?.val || '';
-                    const val2 = chart2Data.data[r][c]?.val || '';
-                    tdOpen.textContent = val1 === '*' || val1 === '**' ? '**' : (chart1Data.data[r][c]?.cn || '');
-                    tdClose.textContent = val2 === '*' || val2 === '**' ? '**' : (chart2Data.data[r][c]?.close || '');
-                    trOpen.appendChild(tdOpen);
-                    trClose.appendChild(tdClose);
+            linkChartsBtn.addEventListener('click', () => {
+                const chart1Name = chart1Select.value;
+                const chart2Name = chart2Select.value;
+
+                if (!chart1Name || !chart2Name || chart1Name === chart2Name) {
+                    alert('Please select two different charts.');
+                    return;
                 }
-                openTable.appendChild(trOpen);
-                closeTable.appendChild(trClose);
-            }
-        }
 
-        function saveLink() {
-            const linkName = currentLinkName;
-            const chart1Name = chart1Select.value;
-            const chart2Name = chart2Select.value;
-            if (!linkName || !chart1Name || !chart2Name || chart1Name === chart2Name) {
-                alert('Please select different charts and enter a valid link name.');
-                return;
-            }
-            const linkHistory = JSON.parse(localStorage.getItem('linkHistory')) || {};
-            linkHistory[linkName] = { chart1: chart1Name, chart2: chart2Name };
-            localStorage.setItem('linkHistory', JSON.stringify(linkHistory));
-            saveLinkBtn.disabled = true;
-            saveSymbol.classList.remove('hidden');
-            saveLinkBtn.classList.add('animate-pulse');
-            saveLinkBtn.textContent = 'Saved!';
-            setTimeout(() => {
-                saveLinkBtn.disabled = false;
-                saveSymbol.classList.add('hidden');
-                saveLinkBtn.classList.remove('animate-pulse');
-                saveLinkBtn.textContent = 'Save Link';
-            }, 1000);
-        }
+                const chart1 = history[chart1Name];
+                const chart2 = history[chart2Name];
+                const rows = Math.max(chart1.rows, chart2.rows);
+                const cols = Math.max(chart1.cols, chart2.cols);
 
-        createLinkBtn.addEventListener('click', () => {
-            const name = document.getElementById('link-name-input').value.trim();
-            const chart1 = chart1Select.value;
-            const chart2 = chart2Select.value;
-            if (!name || !chart1 || !chart2 || chart1 === chart2) {
-                alert('Please enter a link name and select two different charts.');
-                return;
-            }
-            createLinkBtn.disabled = true;
-            loadingSpinner.classList.remove('hidden');
-            setTimeout(() => {
-                currentLinkName = name;
-                chartNameHeader.textContent = `Linking: ${currentLinkName}`;
-                document.getElementById('initial-setup').classList.add('hidden');
-                document.getElementById('link-main').classList.remove('hidden');
-                const history = JSON.parse(localStorage.getItem('chartHistory')) || {};
-                const chart1Data = history[chart1];
-                const chart2Data = history[chart2];
-                renderLinkedTables(chart1Data, chart2Data);
-                createLinkBtn.disabled = false;
-                loadingSpinner.classList.add('hidden');
-            }, 500);
+                // Generate Open Conditions Table
+                openTable.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+                openTable.innerHTML = '';
+                for (let i = 0; i < rows; i++) {
+                    for (let j = 0; j < cols; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'grid-cell';
+                        const cn1 = chart1.data[i]?.[j]?.cn || '';
+                        const cn2 = chart2.data[i]?.[j]?.cn || '';
+                        const open1 = cn1.split('-')[0] || '';
+                        const open2 = cn2.split('-')[0] || '';
+                        cell.textContent = open1 + open2;
+                        openTable.appendChild(cell);
+                    }
+                }
+                openConditionsDiv.classList.remove('hidden');
+
+                // Generate Close Conditions Table
+                closeTable.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+                closeTable.innerHTML = '';
+                for (let i = 0; i < rows; i++) {
+                    for (let j = 0; j < cols; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'grid-cell';
+                        const cn1 = chart1.data[i]?.[j]?.cn || '';
+                        const cn2 = chart2.data[i]?.[j]?.cn || '';
+                        const close1 = cn1.split('-')[1] || '';
+                        const close2 = cn2.split('-')[1] || '';
+                        cell.textContent = close1 + close2;
+                        closeTable.appendChild(cell);
+                    }
+                }
+                closeConditionsDiv.classList.remove('hidden');
+            });
         });
-
-        saveLinkBtn.addEventListener('click', saveLink);
-
-        populateChartSelects();
     </script>
 </body>
 </html>
