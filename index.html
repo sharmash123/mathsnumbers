@@ -32,8 +32,8 @@
         }
         td { 
             border: 2px solid #000; 
-            width: 80px; 
-            height: 80px; 
+            width: 100px; /* Increased from 80px */
+            height: 100px; /* Increased from 80px */
             text-align: center; 
             font-size: 30px; 
             cursor: pointer; 
@@ -63,7 +63,7 @@
         }
         .conditions {
             display: block;
-            font-size: 0.7em; /* Reduced size as requested */
+            font-size: 0.7em; /* Maintained reduced size */
             margin-top: 2px;
             line-height: 1.2;
             color: #333; 
@@ -75,8 +75,8 @@
         /* Responsive Design */
         @media (max-width: 1024px) { /* Tablet */
             td { 
-                width: 70px; 
-                height: 70px; 
+                width: 90px; /* Increased from 70px */
+                height: 90px; /* Increased from 70px */
                 font-size: 26px; 
             }
             input.cell-input { 
@@ -91,8 +91,8 @@
         }
         @media (max-width: 600px) { /* Mobile */
             td { 
-                width: 60px; 
-                height: 60px; 
+                width: 80px; /* Increased from 60px */
+                height: 80px; /* Increased from 60px */
                 font-size: 20px; 
             }
             input.cell-input { 
@@ -224,6 +224,9 @@
                                     if (cn !== null && close !== null) {
                                         gridData[r][c] = { val, cn, close };
                                         td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">(${cn})-(${close})</span>`;
+                                    } else {
+                                        console.log(`Invalid calculation for ${val}: cn=${cn}, close=${close}`);
+                                        td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span>`;
                                     }
                                 }
                                 saveChart();
