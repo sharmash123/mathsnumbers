@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Added for better mobile responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Ensures responsiveness across all devices -->
     <title>Number-Cal: Charts</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -40,6 +40,7 @@
             background-color: #ffffff; 
             position: relative; 
             vertical-align: middle; 
+            padding: 4px; /* Added padding for consistent spacing */
         }
         input.cell-input { 
             width: 100%; 
@@ -56,48 +57,56 @@
             font-weight: bold; 
         }
         .number-value {
-            font-size: 34px; /* Slightly larger font for the number */
+            font-size: 34px; /* Base larger font for number */
             font-weight: bold;
+            display: block; /* Ensure number takes its own line */
         }
         .conditions {
             display: block;
             font-size: 0.8em;
             margin-top: 2px;
             line-height: 1.2;
-        }
-        .small-cn { 
-            display: inline; /* For (open)-(close) format */
-            font-size: 0.8em; 
-            margin-top: 2px; 
-            line-height: 1.2; 
+            color: #333; /* Readable contrast */
         }
         .hidden { 
             display: none; 
         }
-        @media (max-width: 600px) {
+
+        /* Responsive Design for All Devices */
+        @media (max-width: 1024px) { /* Tablet and smaller */
             td { 
-                width: 60px; /* Reduced for mobile to fit more cells */
-                height: 60px; 
-                font-size: 20px; /* Base font size for better fit */
-                padding: 4px; /* Added padding for spacing */
+                width: 70px; 
+                height: 70px; 
+                font-size: 26px; 
             }
             input.cell-input { 
-                font-size: 22px; /* Slightly larger for input readability */
-                font-weight: bold;
+                font-size: 26px; 
             }
             .number-value {
-                font-size: 24px; /* Adjusted for mobile, still bold */
-                font-weight: bold;
+                font-size: 30px; 
             }
             .conditions { 
-                font-size: 0.7em; /* Smaller but readable */
-                margin-top: 1px; /* Tighter spacing */
+                font-size: 0.75em; 
             }
-            .small-cn { 
+        }
+        @media (max-width: 600px) { /* Mobile */
+            td { 
+                width: 60px; 
+                height: 60px; 
+                font-size: 20px; 
+            }
+            input.cell-input { 
+                font-size: 22px; 
+            }
+            .number-value {
+                font-size: 24px; 
+            }
+            .conditions { 
                 font-size: 0.7em; 
+                margin-top: 1px; 
             }
             .table-container {
-                padding: 0 8px; /* Ensure table fits within mobile viewport */
+                padding: 0 8px; 
             }
         }
     </style>
@@ -339,12 +348,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
