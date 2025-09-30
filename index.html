@@ -132,7 +132,7 @@
     <div id="initial-setup" class="initial-form animate-fadeIn">
         <h2 class="text-2xl font-semibold text-center mb-2">Create a New Chart</h2>
         <input type="text" id="chart-name-input" placeholder="Enter Chart Name" class="p-2 border border-gray-300 rounded-md shadow-sm">
-        <input type="number" id="rowsInput" placeholder="Rows (e.g., 100)" min="1" value="100" class="p-2 border border-gray-300 rounded-md shadow-sm">
+        <input type="number" id="rowsInput" placeholder="Rows (e.g., 100)" min="1" value="2000" class="p-2 border border-gray-300 rounded-md shadow-sm">
         <input type="number" id="colsInput" placeholder="Columns (e.g., 7)" min="5" max="8" value="7" class="p-2 border border-gray-300 rounded-md shadow-sm">
         <button id="create-chart-btn" class="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors duration-300 flex items-center justify-center gap-2">
             Create Chart
@@ -160,7 +160,7 @@
             <button id="fill-grid-btn" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors duration-300">Fill Grid</button>
         </div>
         <div class="modify-size flex flex-wrap justify-center items-center gap-4 mb-4">
-            <input type="number" id="rowsModify" placeholder="Modify Rows" min="1" value="100" class="p-2 border border-gray-300 rounded-md shadow-sm">
+            <input type="number" id="rowsModify" placeholder="Modify Rows" min="1" value="2000" class="p-2 border border-gray-300 rounded-md shadow-sm">
             <input type="number" id="colsModify" placeholder="Modify Columns" min="5" max="8" value="7" class="p-2 border border-gray-300 rounded-md shadow-sm">
             <button id="resize-btn" class="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600 transition-colors duration-300">Resize Chart</button>
         </div>
@@ -173,7 +173,7 @@
 
     <script>
         const redPairs = {0:5, 1:6, 2:7, 3:8, 4:9, 5:0, 6:1, 7:2, 8:3, 9:4};
-        let ROWS = 100;
+        let ROWS = 2000;
         let COLS = 7;
         const tbody = document.querySelector("#grid tbody");
         const chartNameHeader = document.querySelector("#chart-main h2");
@@ -448,5 +448,6 @@
     </script>
 </body>
 </html>
+
 
 
