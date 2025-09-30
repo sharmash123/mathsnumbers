@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+   
     <title>Number-Cal: Charts</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -204,7 +204,8 @@
                     td.addEventListener("click", () => {
                         td.innerHTML = "";
                         const input = document.createElement("input");
-                        input.type = "text";
+                        input.type = "number"; /* Changed to number for numeric keypad */
+                        input.inputmode = "numeric"; /* Ensures numeric keypad on mobile */
                         input.maxLength = 2;
                         input.className = "cell-input";
                         input.value = gridData[r][c]?.val || "";
@@ -366,3 +367,4 @@
     </script>
 </body>
 </html>
+
