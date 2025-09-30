@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-   
     <title>Number-Cal: Charts</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -63,7 +62,8 @@
         }
         .conditions {
             display: block;
-            font-size: 0.7em; /* Maintained reduced size */
+            font-size: 0.9em; /* Increased from 0.8em */
+            font-weight: bold; /* Added to make conditions bold */
             margin-top: 2px;
             line-height: 1.2;
             color: #333; 
@@ -86,7 +86,8 @@
                 font-size: 30px; 
             }
             .conditions { 
-                font-size: 0.65em; 
+                font-size: 0.85em; /* Increased from 0.75em */
+                font-weight: bold; /* Added to make conditions bold */
             }
         }
         @media (max-width: 600px) { /* Mobile */
@@ -102,7 +103,8 @@
                 font-size: 24px; 
             }
             .conditions { 
-                font-size: 0.6em; 
+                font-size: 0.8em; /* Increased from 0.7em */
+                font-weight: bold; /* Added to make conditions bold */
                 margin-top: 1px; 
             }
             .table-container {
@@ -204,8 +206,8 @@
                     td.addEventListener("click", () => {
                         td.innerHTML = "";
                         const input = document.createElement("input");
-                        input.type = "number"; /* Changed to number for numeric keypad */
-                        input.inputmode = "numeric"; /* Ensures numeric keypad on mobile */
+                        input.type = "number";
+                        input.inputmode = "numeric";
                         input.maxLength = 2;
                         input.className = "cell-input";
                         input.value = gridData[r][c]?.val || "";
