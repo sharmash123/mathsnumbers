@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Ensures responsiveness across all devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" /> <!-- Enhanced for mobile control -->
     <title>Number-Cal: Charts</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -40,7 +40,7 @@
             background-color: #ffffff; 
             position: relative; 
             vertical-align: middle; 
-            padding: 4px; /* Added padding for consistent spacing */
+            padding: 4px; 
         }
         input.cell-input { 
             width: 100%; 
@@ -57,23 +57,23 @@
             font-weight: bold; 
         }
         .number-value {
-            font-size: 34px; /* Base larger font for number */
+            font-size: 34px; 
             font-weight: bold;
-            display: block; /* Ensure number takes its own line */
+            display: block; 
         }
         .conditions {
             display: block;
             font-size: 0.8em;
             margin-top: 2px;
             line-height: 1.2;
-            color: #333; /* Readable contrast */
+            color: #333; 
         }
         .hidden { 
             display: none; 
         }
 
-        /* Responsive Design for All Devices */
-        @media (max-width: 1024px) { /* Tablet and smaller */
+        /* Responsive Design */
+        @media (max-width: 1024px) { /* Tablet */
             td { 
                 width: 70px; 
                 height: 70px; 
@@ -146,7 +146,7 @@
         <div class="input-box flex flex-wrap justify-center items-center gap-4 mb-8">
             <button id="save-btn" class="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors duration-300 flex items-center justify-center gap-2">
                 Save Chart
-                <svg id="save-symbol" class="h-5 w-5 hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <svg id="save-symbol" class="h-5 w-5 hidden" xmlns="http://www.w.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
             </button>
@@ -162,7 +162,7 @@
 
     <script>
         const redPairs = {0:5, 1:6, 2:7, 3:8, 4:9, 5:0, 6:1, 7:2, 8:3, 9:4};
-        let ROWS = 100;
+        let ROWS = 150;
         let COLS = 7;
         const tbody = document.querySelector("#grid tbody");
         const chartNameHeader = document.querySelector("#chart-main h2");
