@@ -32,8 +32,8 @@
         }
         td { 
             border: 2px solid #000; 
-            width: 120px; /* Increased to 120px for square shape */
-            height: 120px; /* Increased to 120px for square shape */
+            width: 100px; /* Increased from 80px */
+            height: 100px; /* Increased from 80px */
             text-align: center; 
             font-size: 30px; 
             cursor: pointer; 
@@ -63,7 +63,7 @@
         }
         .conditions {
             display: block;
-            font-size: 0.6em; /* Decreased from 0.7em for smaller CN size */
+            font-size: 0.7em; /* Maintained reduced size */
             margin-top: 2px;
             line-height: 1.2;
             color: #333; 
@@ -75,8 +75,8 @@
         /* Responsive Design */
         @media (max-width: 1024px) { /* Tablet */
             td { 
-                width: 110px; /* Adjusted for square shape */
-                height: 110px; /* Adjusted for square shape */
+                width: 90px; /* Increased from 70px */
+                height: 90px; /* Increased from 70px */
                 font-size: 26px; 
             }
             input.cell-input { 
@@ -86,13 +86,13 @@
                 font-size: 30px; 
             }
             .conditions { 
-                font-size: 0.55em; /* Decreased from 0.65em */
+                font-size: 0.65em; 
             }
         }
         @media (max-width: 600px) { /* Mobile */
             td { 
-                width: 100px; /* Adjusted for square shape */
-                height: 100px; /* Adjusted for square shape */
+                width: 80px; /* Increased from 60px */
+                height: 80px; /* Increased from 60px */
                 font-size: 20px; 
             }
             input.cell-input { 
@@ -102,7 +102,7 @@
                 font-size: 24px; 
             }
             .conditions { 
-                font-size: 0.5em; /* Decreased from 0.6em */
+                font-size: 0.6em; 
                 margin-top: 1px; 
             }
             .table-container {
@@ -223,7 +223,7 @@
                                     const red = isRed(val);
                                     if (cn !== null && close !== null) {
                                         gridData[r][c] = { val, cn, close };
-                                        td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">${cn} ${close}</span>`;
+                                        td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">(${cn})-(${close})</span>`;
                                     } else {
                                         console.log(`Invalid calculation for ${val}: cn=${cn}, close=${close}`);
                                         td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span>`;
@@ -249,7 +249,7 @@
                                 const red = isRed(val);
                                 if (cn !== null && close !== null) {
                                     gridData[r][c] = { val, cn, close };
-                                    td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">${cn} ${close}</span>`;
+                                    td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">(${cn})-(${close})</span>`;
                                 } else {
                                     console.log(`Invalid calculation for ${val}: cn=${cn}, close=${close}`);
                                     td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span>`;
@@ -268,7 +268,7 @@
                         } else {
                             const red = isRed(val);
                             if (cn !== null && close !== null) {
-                                td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">${cn} ${close}</span>`;
+                                td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">(${cn})-(${close})</span>`;
                             } else {
                                 console.log(`Missing cn or close for ${val}: cn=${cn}, close=${close}`);
                                 td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span>`;
