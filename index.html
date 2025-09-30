@@ -155,6 +155,15 @@
             <button onclick="clearGrid()" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 transition-colors duration-300">Clear Grid</button>
             <button onclick="newChart()" class="bg-purple-500 text-white p-2 rounded hover:bg-purple-600 transition-colors duration-300">Create New Chart</button>
         </div>
+        <div class="quick-entry flex flex-wrap justify-center items-center gap-4 mb-4">
+            <input type="text" id="quick-input" placeholder="Enter values like 2354**00" class="p-2 border border-gray-300 rounded-md shadow-sm flex-grow max-w-md">
+            <button id="fill-grid-btn" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors duration-300">Fill Grid</button>
+        </div>
+        <div class="modify-size flex flex-wrap justify-center items-center gap-4 mb-4">
+            <input type="number" id="rowsModify" placeholder="Modify Rows" min="1" value="100" class="p-2 border border-gray-300 rounded-md shadow-sm">
+            <input type="number" id="colsModify" placeholder="Modify Columns" min="5" max="8" value="7" class="p-2 border border-gray-300 rounded-md shadow-sm">
+            <button id="resize-btn" class="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600 transition-colors duration-300">Resize Chart</button>
+        </div>
         <div class="table-container">
             <table id="grid">
                 <tbody></tbody>
@@ -206,8 +215,7 @@
                     td.addEventListener("click", () => {
                         td.innerHTML = "";
                         const input = document.createElement("input");
-                        input.type = "number";
-                        input.inputmode = "numeric";
+                        input.type = "text";
                         input.maxLength = 2;
                         input.className = "cell-input";
                         input.value = gridData[r][c]?.val || "";
@@ -224,13 +232,8 @@
                                     const cn = calculateCN(val);
                                     const close = calculateCloseCond(val);
                                     const red = isRed(val);
-                                    if (cn !== null && close !== null) {
-                                        gridData[r][c] = { val, cn, close };
-                                        td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span><span class="conditions">${cn}-${close}</span>`;
-                                    } else {
-                                        console.log(`Invalid calculation for ${val}: cn=${cn}, close=${close}`);
-                                        td.innerHTML = `<span class="${red ? 'red' : ''} number-value">${val}</span>`;
-                                    }
+                                    gridData[r][c] = { val, cn };
+                                    td.innerHTML = `<span class="${red ? 'red' : ''}">${val}<span class="small-cn">(${cn})</span></span>`;
                                 }
                                 saveChart();
                                 let nextRow = r, nextCol = c + 1;
@@ -264,7 +267,7 @@
                             saveChart();
                         });
                     });
-                    if (gridData[r][c]) {
+                    if (gridData[r] && gridData[r][c]) {
                         const { val, cn, close } = gridData[r][c];
                         if (val === "**") {
                             td.innerHTML = `<span class="red number-value">${val}</span>`;
@@ -282,6 +285,70 @@
                 }
                 tbody.appendChild(tr);
             }
+        }
+
+        function fillGridFromQuickInput() {
+            const quickInput = document.getElementById('quick-input').value.trim();
+            if (!quickInput) return;
+
+            const chunks = [];
+            for (let i = 0; i < quickInput.length; i += 2) {
+                let chunk = quickInput.slice(i, i + 2);
+                if (chunk.length === 2) {
+                    chunks.push(chunk);
+                } else if (chunk === '*' && i + 1 < quickInput.length && quickInput[i + 1] === '*') {
+                    chunks.push('**');
+                    i++; // Skip the second * to avoid double counting
+                }
+            }
+
+            let row = 0;
+            let col = 0;
+            chunks.forEach(chunk => {
+                if (row < ROWS && col < COLS) {
+                    if (chunk === '**') {
+                        gridData[row][col] = { val: '**', cn: null, close: null };
+                    } else if (/^\d{2}$/.test(chunk)) {
+                        const cn = calculateCN(chunk);
+                        const close = calculateCloseCond(chunk);
+                        gridData[row][col] = { val: chunk, cn, close };
+                    } else {
+                        console.log(`Invalid chunk: ${chunk}`);
+                    }
+                    col++;
+                    if (col >= COLS) {
+                        col = 0;
+                        row++;
+                    }
+                }
+            });
+
+            renderGrid(ROWS, COLS);
+            saveChart();
+            document.getElementById('quick-input').value = '';
+        }
+
+        function resizeChart() {
+            const newRows = parseInt(document.getElementById('rowsModify').value) || ROWS;
+            const newCols = parseInt(document.getElementById('colsModify').value) || COLS;
+            if (newRows < 1 || newCols < 5 || newCols > 8) {
+                alert('Rows must be at least 1, and Columns must be between 5 and 8.');
+                return;
+            }
+
+            // Preserve existing data within new bounds
+            const newGridData = Array.from({ length: newRows }, () => Array(newCols).fill(null));
+            for (let r = 0; r < Math.min(ROWS, newRows); r++) {
+                for (let c = 0; c < Math.min(COLS, newCols); c++) {
+                    newGridData[r][c] = gridData[r][c];
+                }
+            }
+
+            gridData = newGridData;
+            ROWS = newRows;
+            COLS = newCols;
+            renderGrid(ROWS, COLS);
+            saveChart();
         }
 
         function saveChart() {
@@ -309,6 +376,8 @@
             document.getElementById('initial-setup').classList.add('hidden');
             document.getElementById('chart-main').classList.remove('hidden');
             renderGrid(ROWS, COLS);
+            document.getElementById('rowsModify').value = ROWS;
+            document.getElementById('colsModify').value = COLS;
         }
         
         function clearGrid() {
@@ -344,6 +413,8 @@
                 saveChart();
                 createBtn.disabled = false;
                 loadingSpinner.classList.add('hidden');
+                document.getElementById('rowsModify').value = newRows;
+                document.getElementById('colsModify').value = newCols;
             }, 500);
         });
 
@@ -360,6 +431,16 @@
                 saveBtn.textContent = 'Save Chart';
             }, 1000);
         });
+
+        const fillGridBtn = document.getElementById('fill-grid-btn');
+        if (fillGridBtn) {
+            fillGridBtn.addEventListener('click', fillGridFromQuickInput);
+        }
+
+        const resizeBtn = document.getElementById('resize-btn');
+        if (resizeBtn) {
+            resizeBtn.addEventListener('click', resizeChart);
+        }
 
         const chartToLoad = localStorage.getItem('chartToLoad');
         if (chartToLoad) {
