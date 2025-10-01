@@ -1,196 +1,463 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Number-Cal: Link Charts</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(135deg, #6b7280, #1e40af, #9333ea);
-            font-family: 'Poppins', sans-serif;
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            width: 90%;
-            max-width: 800px;
-            padding: 2rem;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-        .grid-table {
-            display: grid;
-            gap: 2px;
-            border: 3px solid #000;
-            background: #fff;
-            margin-top: 1rem;
-        }
-        .grid-cell {
-            border: 3px solid #000;
-            padding: 0.5rem;
-            text-align: center;
-            min-width: 60px;
-            min-height: 60px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.2rem;
-            background: #f9fafb;
-        }
-        select, button {
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            margin-top: 1rem;
-        }
-        button {
-            background: #10b981;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #059669;
-        }
-        @media (max-width: 600px) {
-            .grid-cell {
-                min-width: 40px;
-                min-height: 40px;
-                font-size: 1rem;
-            }
-            select, button {
-                width: 100%;
-            }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Number-Cal: Link Charts</title>
+
+  <!-- Google Fonts: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind Play CDN (for quick standalone use) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* Use Poppins throughout */
+    html, body { font-family: 'Poppins', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+
+    /* Fade-in animation for container & tables */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-up { animation: fadeInUp 420ms ease-out both; }
+
+    /* Table cell hover scale effect */
+    .cell-hover:hover { transform: translateY(-4px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+    .cell-hover { transition: transform .18s ease, box-shadow .18s ease; }
+
+    /* smaller cells for mobile */
+    @media (max-width: 640px) {
+      .chart-cell { padding: 0.375rem; font-size: 0.85rem; }
+    }
+  </style>
 </head>
-<body>
-    <div class="container">
-        <h2 class="text-2xl font-semibold text-center mb-4 text-indigo-900">Link Charts</h2>
-        <div class="flex flex-col md:flex-row gap-4">
-            <select id="chart1-select" class="w-full md:w-1/2">
-                <option value="">Select First Chart</option>
-            </select>
-            <select id="chart2-select" class="w-full md:w-1/2">
-                <option value="">Select Second Chart</option>
-            </select>
+<body class="min-h-screen bg-gradient-to-br from-gray-200 via-sky-200 to-purple-300 flex items-center justify-center p-6">
+
+  <div class="w-full max-w-5xl fade-in-up">
+    <nav class="mb-6 flex justify-between items-center">
+      <div class="text-lg font-semibold">Number-Cal: <span class="text-sky-700">Link Charts</span></div>
+      <div class="space-x-3">
+        <a href="index.html" class="px-3 py-2 rounded-md bg-white/60 hover:bg-white shadow-sm">Index</a>
+        <a href="store.html" class="px-3 py-2 rounded-md bg-white/60 hover:bg-white shadow-sm">Store</a>
+        <a href="info.html" class="px-3 py-2 rounded-md bg-white/60 hover:bg-white shadow-sm">Info</a>
+      </div>
+    </nav>
+
+    <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 md:p-8">
+      <header class="mb-6">
+        <h1 class="text-2xl md:text-3xl font-bold">Link two saved charts</h1>
+        <p class="text-sm text-gray-600 mt-1">Pick Chart 1 (required) and Chart 2 (optional) to generate linked Open and Close tables. Saved charts are read from <code class="bg-gray-100 px-1 rounded">localStorage.chartHistory</code>.</p>
+      </header>
+
+      <!-- Controls -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Chart 1 (required)</label>
+          <select id="chart1Select" class="w-full rounded-lg border-gray-300 shadow-sm p-2">
+            <option value="">-- Loading charts... --</option>
+          </select>
         </div>
-        <button id="link-charts-btn" class="w-full md:w-auto mt-4">Link Charts</button>
-        <div id="open-conditions" class="mb-4 hidden">
-            <h3 class="text-xl font-semibold mb-2 text-gray-800">Open Conditions Table</h3>
-            <div id="open-table" class="grid-table"></div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Chart 2 (optional)</label>
+          <select id="chart2Select" class="w-full rounded-lg border-gray-300 shadow-sm p-2">
+            <option value="">-- None --</option>
+          </select>
         </div>
-        <div id="close-conditions" class="hidden">
-            <h3 class="text-xl font-semibold mb-2 text-gray-800">Close Conditions Table</h3>
-            <div id="close-table" class="grid-table"></div>
+
+        <div class="flex items-end gap-3">
+          <button id="linkBtn" class="w-full md:w-auto px-5 py-3 bg-sky-600 text-white font-semibold rounded-lg shadow hover:bg-sky-700 transform hover:-translate-y-0.5 transition">Link Charts</button>
         </div>
-        <div id="debug-output" class="mt-4 text-sm text-red-600"></div>
+      </div>
+
+      <!-- Warning / debug area -->
+      <div id="messageArea" class="mb-4"></div>
+
+      <!-- Output Tables area -->
+      <div id="tablesArea" class="grid grid-cols-1 lg:grid-cols-2 gap-6 opacity-0 transition-opacity duration-300"></div>
+
+      <!-- Debug console -->
+      <details class="mt-6 bg-gray-50 p-4 rounded-lg">
+        <summary class="cursor-pointer font-medium">Debug & Logs</summary>
+        <pre id="debugLog" class="mt-3 text-xs text-gray-700 overflow-auto max-h-40"></pre>
+      </details>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const chart1Select = document.getElementById('chart1-select');
-            const chart2Select = document.getElementById('chart2-select');
-            const linkChartsBtn = document.getElementById('link-charts-btn');
-            const openConditionsDiv = document.getElementById('open-conditions');
-            const closeConditionsDiv = document.getElementById('close-conditions');
-            const openTable = document.getElementById('open-table');
-            const closeTable = document.getElementById('close-table');
-            const debugOutput = document.getElementById('debug-output');
+    <footer class="mt-4 text-center text-sm text-gray-700">Made for Number-Cal • localStorage charts under <code class="bg-gray-100 px-1 rounded">chartHistory</code></footer>
+  </div>
 
-            // Load existing charts from localStorage
-            let history = JSON.parse(localStorage.getItem('chartHistory')) || {};
-            if (Object.keys(history).length === 0) {
-                debugOutput.textContent = 'Warning: No charts found in localStorage. Please save charts first.';
-            } else {
-                Object.keys(history).forEach(chartName => {
-                    const option1 = document.createElement('option');
-                    option1.value = chartName;
-                    option1.textContent = chartName;
-                    chart1Select.appendChild(option1.cloneNode(true));
-                    chart2Select.appendChild(option1.cloneNode(true));
-                });
+  <script>
+    /*************************************************************************
+     * Number-Cal: Link Charts
+     * - Reads 'chartHistory' from localStorage (expected: array of chart objects).
+     * - Each chart object expected to have: rows (int), cols (int), data (array of cells).
+     * - Each cell: { num: "94" or "**", cn: "9-4" }  (cn = "open-close")
+     *
+     * Behavior:
+     *  - Choose Chart1 (required), Chart2 (optional). Click "Link Charts".
+     *  - Produces two grids: Open and Close tables.
+     *  - If only Chart1: Open cell -> firstDigitOpen repeated (e.g., "9-1" -> "99"), Close -> secondDigit repeated.
+     *  - If Chart2 selected: Open -> chart1OpenDigit + chart2OpenDigit (e.g., "9" + "4" -> "94").
+     *                      Close -> chart1CloseDigit + chart2CloseDigit.
+     *  - Save: prompts for new chart name and saves new chart into chartHistory as:
+     *         { name: <string>, rows: maxRows, cols: maxCols, data: [ { num: <openVal>, cn: "<openVal>-<closeVal>" }, ... ] }
+     *
+     * Debugging messages shown in UI and console.
+     *************************************************************************/
+
+    // DOM refs
+    const chart1Select = document.getElementById('chart1Select');
+    const chart2Select = document.getElementById('chart2Select');
+    const linkBtn = document.getElementById('linkBtn');
+    const messageArea = document.getElementById('messageArea');
+    const tablesArea = document.getElementById('tablesArea');
+    const debugLog = document.getElementById('debugLog');
+
+    // Utility for logging
+    function debug(msg) {
+      const time = new Date().toLocaleTimeString();
+      console.log(`[LinkCharts ${time}]`, msg);
+      debugLog.textContent = (debugLog.textContent ? debugLog.textContent + "\\n" : "") + `[${time}] ${typeof msg === 'object' ? JSON.stringify(msg) : msg}`;
+      debugLog.scrollTop = debugLog.scrollHeight;
+    }
+
+    // Read chartHistory from localStorage
+    function readChartHistory() {
+      try {
+        const raw = localStorage.getItem('chartHistory');
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) {
+          debug('chartHistory is not an array; resetting to []');
+          return [];
+        }
+        return parsed;
+      } catch (err) {
+        debug('Error parsing chartHistory: ' + err);
+        return [];
+      }
+    }
+
+    // Save chartHistory
+    function saveChartHistory(arr) {
+      try {
+        localStorage.setItem('chartHistory', JSON.stringify(arr));
+        debug('Saved chartHistory (' + arr.length + ' entries).');
+      } catch (err) {
+        debug('Error saving chartHistory: ' + err);
+      }
+    }
+
+    // Populate selects
+    function populateSelects() {
+      const charts = readChartHistory();
+      chart1Select.innerHTML = '';
+      chart2Select.innerHTML = '<option value="">-- None --</option>';
+
+      if (!charts.length) {
+        chart1Select.innerHTML = '<option value="">-- No saved charts --</option>';
+        messageArea.innerHTML = warnHtml('No saved charts found in <code>localStorage.chartHistory</code>. Save charts first (go to Store).');
+        linkBtn.disabled = true;
+        return;
+      }
+
+      // Build options; prefer "name" property if present, otherwise label by index
+      charts.forEach((c, i) => {
+        const label = (c && c.name) ? c.name : `Chart #${i+1}`;
+        // store option value as index (string)
+        const opt1 = document.createElement('option');
+        opt1.value = String(i);
+        opt1.textContent = label;
+        chart1Select.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = String(i);
+        opt2.textContent = label;
+        chart2Select.appendChild(opt2);
+      });
+
+      // add placeholder to top of chart1
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = '-- Select Chart 1 --';
+      placeholder.selected = true;
+      placeholder.disabled = true;
+      chart1Select.prepend(placeholder);
+
+      messageArea.innerHTML = infoHtml('Choose charts and click <strong>Link Charts</strong>.'); 
+      linkBtn.disabled = false;
+    }
+
+    // small HTML helpers
+    function warnHtml(text) {
+      return `<div class="rounded-md p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 text-sm">${text}</div>`;
+    }
+    function errorHtml(text) {
+      return `<div class="rounded-md p-3 bg-red-50 border-l-4 border-red-400 text-red-800 text-sm">${text}</div>`;
+    }
+    function infoHtml(text) {
+      return `<div class="rounded-md p-3 bg-blue-50 border-l-4 border-sky-300 text-sky-800 text-sm">${text}</div>`;
+    }
+    function successHtml(text) {
+      return `<div class="rounded-md p-3 bg-green-50 border-l-4 border-green-300 text-green-800 text-sm">${text}</div>`;
+    }
+
+    // Parse a cn string expected like "9-1". Returns {open: '9', close: '1'} or null on invalid.
+    function parseCN(cnStr) {
+      if (typeof cnStr !== 'string') return null;
+      const m = cnStr.trim().match(/^(\d)-(\d)$/);
+      if (!m) return null;
+      return { open: m[1], close: m[2] };
+    }
+
+    // Build output tables and optionally save chart
+    function handleLinkCharts() {
+      try {
+        const charts = readChartHistory();
+        const idx1 = chart1Select.value;
+        const idx2 = chart2Select.value;
+
+        if (!idx1) {
+          messageArea.innerHTML = errorHtml('Please select Chart 1 (required).');
+          debug('Link attempt failed: Chart1 missing.');
+          return;
+        }
+
+        const chart1 = charts[Number(idx1)];
+        const chart2 = (idx2 !== '') ? charts[Number(idx2)] : null;
+
+        if (!chart1 || !chart1.rows || !chart1.cols || !Array.isArray(chart1.data)) {
+          messageArea.innerHTML = errorHtml('Chart 1 has invalid format (missing rows/cols/data).');
+          debug('Invalid Chart1 object: ' + JSON.stringify(chart1));
+          return;
+        }
+
+        // Determine grid size: max rows/cols of both charts (if chart2 present)
+        const maxRows = chart2 ? Math.max(chart1.rows, chart2.rows) : chart1.rows;
+        const maxCols = chart2 ? Math.max(chart1.cols, chart2.cols) : chart1.cols;
+
+        debug(`Linking charts: Chart1 idx=${idx1} rows=${chart1.rows} cols=${chart1.cols}` + (chart2 ? `; Chart2 idx=${idx2} rows=${chart2.rows} cols=${chart2.cols}` : ''));
+
+        // Build openGrid and closeGrid (2D arrays of strings)
+        const openGrid = Array.from({length: maxRows}, () => Array(maxCols).fill('**'));
+        const closeGrid = Array.from({length: maxRows}, () => Array(maxCols).fill('**'));
+
+        // Helper to read cell cn at (r,c) from a chart object; returns parsed {open,close} or null
+        function getCellParsedCN(chart, r, c) {
+          if (!chart) return null;
+          if (typeof chart.rows !== 'number' || typeof chart.cols !== 'number' || !Array.isArray(chart.data)) return null;
+          if (r < 0 || c < 0 || r >= chart.rows || c >= chart.cols) return null;
+          const idx = r * chart.cols + c;
+          const cell = chart.data[idx];
+          if (!cell || typeof cell.cn !== 'string') return null;
+          return parseCN(cell.cn);
+        }
+
+        for (let r = 0; r < maxRows; r++) {
+          for (let c = 0; c < maxCols; c++) {
+            const p1 = getCellParsedCN(chart1, r, c);
+            const p2 = chart2 ? getCellParsedCN(chart2, r, c) : null;
+
+            if (!p1 && !p2) {
+              // both missing or invalid -> keep '**'
+              openGrid[r][c] = '**';
+              closeGrid[r][c] = '**';
+              continue;
             }
 
-            linkChartsBtn.addEventListener('click', () => {
-                debugOutput.textContent = '';
-                const chart1Name = chart1Select.value;
-                const chart2Name = chart2Select.value;
+            if (!p2) {
+              // only chart1 available -> duplicate digits
+              if (!p1) {
+                openGrid[r][c] = '**';
+                closeGrid[r][c] = '**';
+              } else {
+                openGrid[r][c] = `${p1.open}${p1.open}`;
+                closeGrid[r][c] = `${p1.close}${p1.close}`;
+              }
+            } else {
+              // both present and valid?
+              if (!p1) {
+                // chart1 missing but chart2 present: cannot follow spec (chart1 open needed). We'll fallback to '**'
+                debug(`Cell fallback at r=${r},c=${c}: Chart1 cell missing/invalid while Chart2 exists. Producing '**'.`);
+                openGrid[r][c] = '**';
+                closeGrid[r][c] = '**';
+              } else {
+                // normal combination: open = p1.open + p2.open ; close = p1.close + p2.close
+                openGrid[r][c] = `${p1.open}${p2.open}`;
+                closeGrid[r][c] = `${p1.close}${p2.close}`;
+              }
+            }
+          }
+        }
 
-                if (!chart1Name || !chart2Name || chart1Name === chart2Name) {
-                    debugOutput.textContent = 'Error: Please select two different charts.';
-                    return;
-                }
+        // Render tables to UI
+        renderTables(openGrid, closeGrid);
 
-                const chart1 = history[chart1Name];
-                const chart2 = history[chart2Name];
-                if (!chart1 || !chart2 || !chart1.data || !chart2.data) {
-                    debugOutput.textContent = 'Error: Invalid chart data.';
-                    console.error('Chart data:', chart1, chart2);
-                    return;
-                }
+        // Prompt to save new chart
+        setTimeout(() => {
+          promptAndSaveLinkedChart(openGrid, closeGrid, maxRows, maxCols);
+        }, 50);
 
-                const rows = Math.max(chart1.rows, chart2.rows);
-                const cols = Math.max(chart1.cols, chart2.cols);
+      } catch (err) {
+        debug('Unexpected error in handleLinkCharts: ' + err);
+        messageArea.innerHTML = errorHtml('Unexpected error. See debug logs (open Debug & Logs below).');
+      }
+    }
 
-                // Open Conditions Table
-                openTable.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
-                openTable.innerHTML = '';
-                for (let i = 0; i < rows; i++) {
-                    for (let j = 0; j < cols; j++) {
-                        const cn1 = chart1.data[i]?.[j]?.cn || '';
-                        const cn2 = chart2.data[i]?.[j]?.cn || '';
-                        const open1 = cn1.split('-')[0] || '';
-                        const open2 = cn2.split('-')[0] || '';
-                        const cell = document.createElement('div');
-                        cell.className = 'grid-cell';
-                        cell.textContent = open1 + open2;
-                        openTable.appendChild(cell);
-                    }
-                }
-                openConditionsDiv.classList.remove('hidden');
+    // Render the two table grids
+    function renderTables(openGrid, closeGrid) {
+      tablesArea.style.opacity = '0';
+      tablesArea.innerHTML = ''; // clear
 
-                // Close Conditions Table
-                closeTable.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
-                closeTable.innerHTML = '';
-                for (let i = 0; i < rows; i++) {
-                    for (let j = 0; j < cols; j++) {
-                        const cn1 = chart1.data[i]?.[j]?.cn || '';
-                        const cn2 = chart2.data[i]?.[j]?.cn || '';
-                        const close1 = cn1.split('-')[1] || '';
-                        const close2 = cn2.split('-')[1] || '';
-                        const cell = document.createElement('div');
-                        cell.className = 'grid-cell';
-                        cell.textContent = close1 + close2;
-                        closeTable.appendChild(cell);
-                    }
-                }
-                closeConditionsDiv.classList.remove('hidden');
+      const rows = openGrid.length;
+      const cols = openGrid[0] ? openGrid[0].length : 0;
 
-                // Save the linked chart
-                const newChartName = prompt('Enter a name for the linked chart:');
-                if (newChartName) {
-                    const linkedChart = {
-                        rows: rows,
-                        cols: cols,
-                        data: Array(rows).fill().map((_, i) => Array(cols).fill().map((_, j) => ({
-                            num: openTable.children[i * cols + j].textContent,
-                            cn: `${openTable.children[i * cols + j].textContent}-${closeTable.children[i * cols + j].textContent}`
-                        })))
-                    };
-                    history[newChartName] = linkedChart;
-                    localStorage.setItem('chartHistory', JSON.stringify(history));
-                    debugOutput.textContent = `Chart saved as "${newChartName}".`;
-                    alert(`Chart saved as "${newChartName}".`);
-                }
-            });
-        });
-    </script>
+      // helper to build a table card
+      function buildTableCard(title, grid) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'bg-white rounded-xl shadow p-4 fade-in-up';
+
+        const h = document.createElement('h3');
+        h.innerHTML = `<span class="text-sm font-semibold">${title}</span>`;
+        wrapper.appendChild(h);
+
+        const gridWrap = document.createElement('div');
+        gridWrap.className = 'mt-3 overflow-auto';
+        // Create CSS grid with dynamic columns
+        const tableGrid = document.createElement('div');
+        tableGrid.className = 'inline-grid';
+        tableGrid.style.gridTemplateColumns = `repeat(${cols}, minmax(40px, 1fr))`;
+        tableGrid.style.border = '1px solid #0f172a'; // black-ish border
+        tableGrid.style.borderRadius = '8px';
+        tableGrid.style.overflow = 'hidden';
+
+        // Create cells
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const cellVal = (grid[r] && grid[r][c] !== undefined) ? String(grid[r][c]) : '**';
+            const cell = document.createElement('div');
+            cell.className = 'chart-cell border-[1px] border-black text-center p-3 min-w-[40px] flex items-center justify-center text-sm cell-hover';
+            cell.style.background = '#ffffff';
+            cell.style.width = 'auto';
+            cell.style.height = '56px';
+            cell.style.boxSizing = 'border-box';
+            // Responsive smaller cells on mobile
+            cell.innerText = cellVal;
+            wrapper.appendChild; // noop safe
+            tableGrid.appendChild(cell);
+          }
+        }
+
+        gridWrap.appendChild(tableGrid);
+        wrapper.appendChild(gridWrap);
+
+        // Hover hint & small note
+        const note = document.createElement('div');
+        note.className = 'mt-2 text-xs text-gray-600';
+        note.innerText = 'Cells show combined two-digit values. Hover for effect.';
+        wrapper.appendChild(note);
+
+        return wrapper;
+      }
+
+      const openCard = buildTableCard('Open Table', openGrid);
+      const closeCard = buildTableCard('Close Table', closeGrid);
+
+      // Add them to tablesArea
+      tablesArea.appendChild(openCard);
+      tablesArea.appendChild(closeCard);
+
+      // reveal
+      setTimeout(() => { tablesArea.style.opacity = '1'; }, 20);
+
+      messageArea.innerHTML = successHtml('Generated linked tables. You will be prompted to name & save the new linked chart.');
+      debug('Rendered tables (open and close).');
+    }
+
+    // Prompt user for new chart name and save the chart into chartHistory
+    function promptAndSaveLinkedChart(openGrid, closeGrid, rows, cols) {
+      try {
+        let name = prompt('Enter a name for the new linked chart (leave blank to cancel save):');
+        if (name === null) {
+          messageArea.innerHTML = infoHtml('Save cancelled by user. Linked tables are not saved.');
+          debug('User cancelled saving linked chart (prompt returned null).');
+          return;
+        }
+        name = (typeof name === 'string') ? name.trim() : '';
+        if (!name) {
+          messageArea.innerHTML = infoHtml('Save cancelled (empty name). Linked tables are not saved.');
+          debug('User provided empty name; save cancelled.');
+          return;
+        }
+
+        // Build data array: each cell -> { num: openVal, cn: "<openVal>-<closeVal>" } (openVal may be '**')
+        const data = [];
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const openVal = (openGrid[r] && openGrid[r][c] !== undefined) ? openGrid[r][c] : '**';
+            const closeVal = (closeGrid[r] && closeGrid[r][c] !== undefined) ? closeGrid[r][c] : '**';
+            const cn = `${openVal}-${closeVal}`;
+            data.push({ num: openVal, cn });
+          }
+        }
+
+        const newChart = { name, rows, cols, data };
+        const charts = readChartHistory();
+        charts.push(newChart);
+        saveChartHistory(charts);
+        populateSelects();
+        messageArea.innerHTML = successHtml(`Saved linked chart as "<strong>${escapeHtml(name)}</strong>".`);
+        debug(`Saved new chart: ${name} rows=${rows} cols=${cols} cells=${data.length}`);
+      } catch (err) {
+        debug('Error saving linked chart: ' + err);
+        messageArea.innerHTML = errorHtml('Error while saving the linked chart. See debug logs.');
+      }
+    }
+
+    // Escape HTML for safe innerHTML usage
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    // Attach events
+    linkBtn.addEventListener('click', handleLinkCharts);
+
+    // On load
+    (function init() {
+      populateSelects();
+      // For convenience: if chartHistory missing set an example sample chart for testing (comment out if undesired)
+      // We'll only auto-insert a sample if none exist, to help users test immediately.
+      const existing = readChartHistory();
+      if (!existing.length) {
+        debug('No charts found. Adding a sample pair to help testing (you can remove sample data later).');
+        const sample = [
+          {
+            name: 'Sample Chart A',
+            rows: 3,
+            cols: 4,
+            data: [
+              { num: '12', cn: '1-2' }, { num: '23', cn: '2-3' }, { num: '34', cn: '3-4' }, { num: '45', cn: '4-5' },
+              { num: '56', cn: '5-6' }, { num: '67', cn: '6-7' }, { num: '78', cn: '7-8' }, { num: '89', cn: '8-9' },
+              { num: '90', cn: '9-0' }, { num: '01', cn: '0-1' }, { num: '11', cn: '1-1' }, { num: '**', cn: '**-**' }
+            ]
+          },
+          {
+            name: 'Sample Chart B',
+            rows: 2,
+            cols: 3,
+            data: [
+              { num: '94', cn: '9-4' }, { num: '85', cn: '8-5' }, { num: '76', cn: '7-6' },
+              { num: '67', cn: '6-7' }, { num: '58', cn: '5-8' }, { num: '49', cn: '4-9' }
+            ]
+          }
+        ];
+        saveChartHistory(sample);
+        populateSelects();
+        messageArea.innerHTML = infoHtml('No charts found — a small sample dataset was created to let you test linking immediately. Replace or clear it from the Store page when ready.');
+      }
+    })();
+  </script>
 </body>
 </html>
+
